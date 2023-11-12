@@ -85,15 +85,6 @@ jobs:
             trivy-scanning-results.txt
           retention-days: 30
 
-      - name: Publish Test Report
-        uses: actions/upload-artifact@v3
-        if: always()
-        continue-on-error: true
-        with:
-          name: test-report
-          path: report.xml
-          retention-days: 10
-
       - name: Validate package build
         run: |
           poetry build
@@ -173,3 +164,7 @@ jobs:
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v3.1.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
