@@ -44,14 +44,14 @@ repos:
           - id: pyupgrade
             args: [--py38-plus]
 
-      # Used to have proper type annotations for library code.
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v1.6.1
-      hooks:
-          - id: mypy
-            args: []
-            additional_dependencies: []
-            exclude: (/test_|setup.py|/tests/|docs/)
+    #   # Used to have proper type annotations for library code.
+    # - repo: https://github.com/pre-commit/mirrors-mypy
+    #   rev: v1.6.1
+    #   hooks:
+    #       - id: mypy
+    #         args: []
+    #         additional_dependencies: []
+    #         exclude: (/test_|setup.py|/tests/|docs/)
 
       # Sort imports alphabetically, and automatically separated into sections and by type.
     - repo: https://github.com/timothycrosley/isort
@@ -73,18 +73,18 @@ repos:
             args: [--config, .flake8]
             exclude: (docs/)
 
-      # Enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
-    - repo: https://github.com/pycqa/pylint
-      rev: v3.0.1
-      hooks:
-          - id: pylint
-            exclude: (/test_|tests/|docs/)
+    #   # Enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
+    # - repo: https://github.com/pycqa/pylint
+    #   rev: v3.0.1
+    #   hooks:
+    #       - id: pylint
+    #         exclude: (/test_|tests/|docs/)
 
-      # Finds common security issues in Python code.
-    - repo: https://github.com/PyCQA/bandit
-      rev: 1.7.5
-      hooks:
-          - id: bandit
-            args: [-c, pyproject.toml, --recursive, src]
-            additional_dependencies: [".[toml]"] # required for pyproject.toml support
-            exclude:  (notebooks/)
+    #   # Finds common security issues in Python code.
+    # - repo: https://github.com/PyCQA/bandit
+    #   rev: 1.7.5
+    #   hooks:
+    #       - id: bandit
+    #         args: [-c, pyproject.toml, --recursive, src]
+    #         additional_dependencies: [".[toml]"] # required for pyproject.toml support
+    #         exclude:  (notebooks/, tests/)

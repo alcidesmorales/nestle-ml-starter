@@ -5,18 +5,15 @@ Trains ML model using training dataset. Saves trained model.
 """
 
 import argparse
-
 from pathlib import Path
-
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 import mlflow
 import mlflow.sklearn
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 TARGET_COL = "cost"
 

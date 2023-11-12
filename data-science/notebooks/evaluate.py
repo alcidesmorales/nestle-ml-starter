@@ -1,22 +1,35 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-"""
-Evaluates trained ML model using test dataset.
-Saves predictions, evaluation results and deploy flag.
-"""
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.15.2
+#   kernel_info:
+#     name: python38-azureml
+#   kernelspec:
+#     display_name: Python 3.9.6 64-bit
+#     language: python
+#     name: python3
+# ---
 
+# %%
 import argparse
 from pathlib import Path
 
-import mlflow
-import mlflow.pyfunc
-import mlflow.sklearn
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from mlflow.tracking import MlflowClient
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+
+import mlflow
+import mlflow.sklearn
+import mlflow.pyfunc
+from mlflow.tracking import MlflowClient
+
+# %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
 TARGET_COL = "cost"
 
 NUMERIC_COLS = [
@@ -45,28 +58,34 @@ CAT_NOM_COLS = [
     "vendor",
 ]
 
-CAT_ORD_COLS = []
+CAT_ORD_COLS = [
+]
+
+SENSITIVE_COLS = ["vendor"] # for fairlearn dashborad
 
 
-def parse_args():
-    """Parse input arguments"""
+# %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
+# Define Arguments for this step
 
-    parser = argparse.ArgumentParser("predict")
-    parser.add_argument("--model_name", type=str, help="Name of registered model")
-    parser.add_argument("--model_input", type=str, help="Path of input model")
-    parser.add_argument("--test_data", type=str, help="Path to test dataset")
-    parser.add_argument("--evaluation_output", type=str, help="Path of eval results")
-    parser.add_argument(
-        "--runner", type=str, help="Local or Cloud Runner", default="CloudRunner"
-    )
+class MyArgs:
+    def __init__(self, /, **kwargs):
+        self.__dict__.update(kwargs)
 
-    args = parser.parse_args()
+args = MyArgs(
+                model_name = "taxi-model",
+                model_input = "/tmp/train",
+                test_data = "/tmp/prep/train",
+                evaluation_output = "/tmp/evaluate",
+                runner = "LocalRunner"
+                )
 
-    return args
+os.makedirs(args.evaluation_output, exist_ok = True)
 
+
+# %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
 
 def main(args):
-    """Read trained model and test dataset, evaluate model and save result"""
+    '''Read trained model and test dataset, evaluate model and save result'''
 
     # Load the test data
     test_data = pd.read_parquet(Path(args.test_data))
@@ -76,19 +95,19 @@ def main(args):
     X_test = test_data[NUMERIC_COLS + CAT_NOM_COLS + CAT_ORD_COLS]
 
     # Load the model from input port
-    model = mlflow.sklearn.load_model(args.model_input)
+    model =  mlflow.sklearn.load_model(args.model_input) 
 
     # ---------------- Model Evaluation ---------------- #
     yhat_test, score = model_evaluation(X_test, y_test, model, args.evaluation_output)
 
     # ----------------- Model Promotion ---------------- #
     if args.runner == "CloudRunner":
-        predictions, deploy_flag = model_promotion(
-            args.model_name, args.evaluation_output, X_test, y_test, yhat_test, score
-        )
+        predictions, deploy_flag = model_promotion(args.model_name, args.evaluation_output, X_test, y_test, yhat_test, score)
+
 
 
 def model_evaluation(X_test, y_test, model, evaluation_output):
+
     # Get predictions to y_test (y_test)
     yhat_test = model.predict(X_test)
 
@@ -120,8 +139,8 @@ def model_evaluation(X_test, y_test, model, evaluation_output):
     mlflow.log_metric("test mae", mae)
 
     # Visualize results
-    plt.scatter(y_test, yhat_test, color="black")
-    plt.plot(y_test, y_test, color="blue", linewidth=3)
+    plt.scatter(y_test, yhat_test,  color='black')
+    plt.plot(y_test, y_test, color='blue', linewidth=3)
     plt.xlabel("Real value")
     plt.ylabel("Predicted value")
     plt.title("Comparing Model Predictions to Real values - Test Data")
@@ -130,8 +149,8 @@ def model_evaluation(X_test, y_test, model, evaluation_output):
 
     return yhat_test, r2
 
-
 def model_promotion(model_name, evaluation_output, X_test, y_test, yhat_test, score):
+    
     scores = {}
     predictions = {}
 
@@ -140,12 +159,10 @@ def model_promotion(model_name, evaluation_output, X_test, y_test, yhat_test, sc
     for model_run in client.search_model_versions(f"name='{model_name}'"):
         model_version = model_run.version
         mdl = mlflow.pyfunc.load_model(
-            model_uri=f"models:/{model_name}/{model_version}"
-        )
+            model_uri=f"models:/{model_name}/{model_version}")
         predictions[f"{model_name}:{model_version}"] = mdl.predict(X_test)
         scores[f"{model_name}:{model_version}"] = r2_score(
-            y_test, predictions[f"{model_name}:{model_version}"]
-        )
+            y_test, predictions[f"{model_name}:{model_version}"])
 
     if scores:
         if score >= max(list(scores.values())):
@@ -156,16 +173,15 @@ def model_promotion(model_name, evaluation_output, X_test, y_test, yhat_test, sc
         deploy_flag = 1
     print(f"Deploy flag: {deploy_flag}")
 
-    with open((Path(evaluation_output) / "deploy_flag"), "w") as outfile:
+    with open((Path(evaluation_output) / "deploy_flag"), 'w') as outfile:
         outfile.write(f"{int(deploy_flag)}")
 
     # add current model score and predictions
     scores["current model"] = score
     predictions["currrent model"] = yhat_test
 
-    perf_comparison_plot = pd.DataFrame(scores, index=["r2 score"]).plot(
-        kind="bar", figsize=(15, 10)
-    )
+    perf_comparison_plot = pd.DataFrame(
+        scores, index=["r2 score"]).plot(kind='bar', figsize=(15, 10))
     perf_comparison_plot.figure.savefig("perf_comparison.png")
     perf_comparison_plot.figure.savefig(Path(evaluation_output) / "perf_comparison.png")
 
@@ -175,21 +191,22 @@ def model_promotion(model_name, evaluation_output, X_test, y_test, yhat_test, sc
     return predictions, deploy_flag
 
 
-if __name__ == "__main__":
-    mlflow.start_run()
+# %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
+mlflow.start_run()
 
-    args = parse_args()
+lines = [
+    f"Model name: {args.model_name}",
+    f"Model path: {args.model_input}",
+    f"Test data path: {args.test_data}",
+    f"Evaluation output path: {args.evaluation_output}",
+]
 
-    lines = [
-        f"Model name: {args.model_name}",
-        f"Model path: {args.model_input}",
-        f"Test data path: {args.test_data}",
-        f"Evaluation output path: {args.evaluation_output}",
-    ]
+for line in lines:
+    print(line)
 
-    for line in lines:
-        print(line)
+main(args)
 
-    main(args)
+mlflow.end_run()
 
-    mlflow.end_run()
+# %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}} vscode={"languageId": "shellscript"}
+# ls "/tmp/evaluate"

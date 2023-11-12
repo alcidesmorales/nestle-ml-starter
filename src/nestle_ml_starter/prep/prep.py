@@ -5,12 +5,11 @@ Prepares raw data and provides training, validation and test datasets
 """
 
 import argparse
-
 from pathlib import Path
-import numpy as np
-import pandas as pd
 
 import mlflow
+import numpy as np
+import pandas as pd
 
 TARGET_COL = "cost"
 
@@ -78,7 +77,7 @@ def main(args):
     # ------------ Reading Data ------------ #
     # -------------------------------------- #
 
-    data = pd.read_csv((Path(args.raw_data)))
+    data = pd.read_csv(Path(args.raw_data))
     data = data[NUMERIC_COLS + CAT_NOM_COLS + CAT_ORD_COLS + [TARGET_COL]]
 
     # ------------- Split Data ------------- #
@@ -100,9 +99,9 @@ def main(args):
     mlflow.log_metric("val size", val.shape[0])
     mlflow.log_metric("test size", test.shape[0])
 
-    train.to_parquet((Path(args.train_data) / "train.parquet"))
-    val.to_parquet((Path(args.val_data) / "val.parquet"))
-    test.to_parquet((Path(args.test_data) / "test.parquet"))
+    train.to_parquet(Path(args.train_data) / "train.parquet")
+    val.to_parquet(Path(args.val_data) / "val.parquet")
+    test.to_parquet(Path(args.test_data) / "test.parquet")
 
     if (
         args.enable_monitoring.lower() == "true"

@@ -5,11 +5,11 @@ Registers trained ML model if deploy flag is True.
 """
 
 import argparse
-from pathlib import Path
-import mlflow
-
-import os
 import json
+import os
+from pathlib import Path
+
+import mlflow
 
 
 def parse_args():
@@ -55,7 +55,7 @@ def main(args):
 
         # write model info
         print("Writing JSON")
-        dict = {"id": "{0}:{1}".format(args.model_name, model_version)}
+        dict = {"id": f"{args.model_name}:{model_version}"}
         output_path = os.path.join(args.model_info_output_path, "model_info.json")
         with open(output_path, "w") as of:
             json.dump(dict, fp=of)

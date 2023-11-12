@@ -113,9 +113,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      checks: write
-      pull-requests: write
-      contents: write
+      packages: write
+      deployments: write
+      contents: read
+      actions: read
     strategy:
       fail-fast: false
       matrix:
