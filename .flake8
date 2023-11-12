@@ -12,12 +12,12 @@ docstring-convention=google
 spellcheck-targets=comments
 
 include =
-        src/../*.py
+        src/../*.py,
 
 exclude =
         data-science/*,
         docs/*,
-        tests/*,
+        src/tests/*,
         dist/*,
         build/*
         .git,
