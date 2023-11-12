@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nestle-ml-starter"
-version = "0.1.0-dev"
+version = "0.1.0"
 description = "Nestle MLOps blueprint template for ML at scale"
 authors = ["Alcides Morales Guedes <Alcides.Morales@gmail.com>"]
 readme = "README.md"
