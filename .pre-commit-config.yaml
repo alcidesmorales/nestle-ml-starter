@@ -12,13 +12,6 @@ repos:
           - id: check-json
           - id: check-yaml
 
-      # PEP 8 compliant opinionated formatter.
-    - repo: https://github.com/psf/black
-      rev: 23.10.1
-      hooks:
-          - id: black
-            exclude: (docs/|notebooks/)
-
       # Save .ipynb to .py:percent format
     - repo: https://github.com/mwouts/jupytext
       rev: v1.15.2
@@ -27,7 +20,14 @@ repos:
           args: ["--from", ".ipynb", "--to", "py:percent", "--pipe-fmt", "black"]
           files: "\\.ipynb$"
           additional_dependencies:
-            - black==23.10.1
+            - black
+
+      # PEP 8 compliant opinionated formatter.
+    - repo: https://github.com/psf/black
+      rev: 23.10.1
+      hooks:
+          - id: black
+            exclude: (docs/|notebooks/)
 
       # Cleaning unused imports.
     - repo: https://github.com/hadialqattan/pycln
@@ -42,7 +42,7 @@ repos:
       rev: v3.15.0
       hooks:
           - id: pyupgrade
-            args: [--py38-plus]
+            args: [--py39-plus]
 
     #   # Used to have proper type annotations for library code.
     # - repo: https://github.com/pre-commit/mirrors-mypy
