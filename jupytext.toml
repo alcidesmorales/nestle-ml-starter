@@ -1,0 +1,3 @@
+[formats]
+"data-science/notebooks/" = "ipynb"
+"src/nestle_ml_starter/" = "py:percent"

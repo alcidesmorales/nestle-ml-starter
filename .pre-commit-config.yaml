@@ -12,15 +12,15 @@ repos:
           - id: check-json
           - id: check-yaml
 
-    #   # Save .ipynb to .py:percent format
-    # - repo: https://github.com/mwouts/jupytext
-    #   rev: v1.15.2
-    #   hooks:
-    #     - id: jupytext
-    #       args: ["--from", ".ipynb", "--to", "py:percent", "--pipe-fmt", "black"]
-    #       files: "\\.ipynb$"
-    #       additional_dependencies:
-    #         - black
+      # Save .ipynb to .py:percent format
+    - repo: https://github.com/mwouts/jupytext
+      rev: v1.15.2
+      hooks:
+        - id: jupytext
+          args: ["--sync", "--pipe", "black"]
+          files: "\\.ipynb$"
+          additional_dependencies:
+            - black
 
       # PEP 8 compliant opinionated formatter.
     - repo: https://github.com/psf/black
@@ -37,12 +37,12 @@ repos:
             args: ["-a"]
             exclude: (docs/|notebooks/)
 
-    # Modernizes python code and upgrade syntax for newer versions of the language
-    - repo: https://github.com/asottile/pyupgrade
-      rev: v3.15.0
-      hooks:
-          - id: pyupgrade
-            args: [--py39-plus]
+    # # Modernizes python code and upgrade syntax for newer versions of the language
+    # - repo: https://github.com/asottile/pyupgrade
+    #   rev: v3.15.0
+    #   hooks:
+    #       - id: pyupgrade
+    #         args: [--py39-plus]
 
     #   # Used to have proper type annotations for library code.
     # - repo: https://github.com/pre-commit/mirrors-mypy
