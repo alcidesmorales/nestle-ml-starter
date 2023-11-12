@@ -140,6 +140,12 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements-dev.txt
 
+      - name: Install Poetry
+        run: |
+          pip install --constraint=requirements-dev.txt poetry
+          poetry --version
+          poetry install
+
       - name: Run Tests With Coverage
         run: |
           # run with coverage to not execute tests twice
