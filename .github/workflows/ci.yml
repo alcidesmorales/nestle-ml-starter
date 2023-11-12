@@ -110,12 +110,12 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-      contents: write # required for advanced coverage reporting (to keep branch)
+      contents: write
     strategy:
-      fail-fast: false # do not stop all jobs if one fails
+      fail-fast: false
       matrix:
         include:
-          - python-version: "3.11"
+          - python-version: "3.9"
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -157,43 +157,16 @@ jobs:
           path: report.xml
           retention-days: 10
 
-      # simpler version for code coverage reporting
-      # - name: Produce Coverage report
-      #   uses: 5monkeys/cobertura-action@v13
-      #   continue-on-error: true
-      #   with:
-      #     path: coverage.xml
-      #     minimum_coverage: 70
-      #     fail_below_threshold: false
-
-      # more complex version for better coverage reporting
       - name: Produce the coverage report
         uses: insightsengineering/coverage-action@v2
         continue-on-error: true
         with:
-          # Path to the Cobertura XML report.
           path: coverage.xml
-          # Minimum total coverage, if you want to the
-          # workflow to enforce it as a standard.
-          # This has no effect if the `fail` arg is set to `false`.
           threshold: 60
-          # Fail the workflow if the minimum code coverage
-          # reuqirements are not satisfied.
           fail: false
-          # Publish the rendered output as a PR comment
           publish: true
-          # Create a coverage diff report.
           diff: true
-          # Branch to diff against.
-          # Compare the current coverage to the coverage
-          # determined on this branch.
           diff-branch: ${{ github.event.repository.default_branch }}
-          # make report togglable
           togglable-report: true
-          # This is where the coverage reports for the
-          # `diff-branch` are stored.
-          # Branch is created if it doesn't already exist'.
           diff-storage: _xml_coverage_reports
-          # A custom title that can be added to the code
-          # coverage summary in the PR comment.
           coverage-summary-title: "Code Coverage Summary"
