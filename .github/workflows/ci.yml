@@ -1,18 +1,12 @@
 name: Continuous Integration
 
-permissions:
-  contents: read
-  issues: write
-  packages: write
-  pull-requests: write
-  repository-projects: write
-  security-events: write
-  statuses: write
+permissions: read-all
 
 on:
   push:
     branches: [main, master]
   pull_request:
+    branches: [main, master, develoment]
 
 jobs:
   lints:
@@ -20,13 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      checks: write
-      pull-requests: write
+      packages: write
+      deployments: write
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
