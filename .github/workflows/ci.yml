@@ -61,16 +61,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           comment_tag: trivy
 
-      - name: Create venv
-        run: . ./setup_dev_env.sh
+      - name: Install Development Dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Install Poetry and Project Dependencies
+        run: |
+          pip install --constraint=requirements-dev.txt poetry
+          poetry --version
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: Check licenses
-        run: ./check_licenses.sh
-
-      - name: Generate pip freeze
-        run: |
-          source venv/bin/activate
-          pip freeze > requirements-freeze.txt
+        run: ./scripts/check_licenses.sh
 
       - name: Publish Artefacts
         uses: actions/upload-artifact@v3
@@ -79,7 +81,6 @@ jobs:
         with:
           name: results
           path: |
-            requirements-freeze.txt
             licenses.txt
             trivy-scanning-results.txt
           retention-days: 30
@@ -95,18 +96,7 @@ jobs:
 
       - name: Validate package build
         run: |
-          source venv/bin/activate
-          python -m pip install -U build
-          python -m build
-
-      - name: Publish Package
-        uses: actions/upload-artifact@v3
-        continue-on-error: true
-        if: success()
-        with:
-          name: packages
-          path: dist/**
-          retention-days: 3
+          poetry build
 
   tests:
     name: Run tests
@@ -137,18 +127,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install Dependencies
-        run: pip install -r requirements-dev.txt
-
-      - name: Install Poetry
+      - name: Install Poetry and Project Dependencies
         run: |
-          pip install --constraint=requirements-dev.txt poetry
+          pip install -r requirements-dev.txt
           poetry --version
+          poetry config virtualenvs.create false
           poetry install
 
       - name: Run Tests With Coverage
         run: |
-          # run with coverage to not execute tests twice
+          # run units tests with coverage to not execute tests twice
           coverage run -m pytest -v -p no:warnings --junitxml=report.xml src/tests/
           coverage report
           coverage xml
@@ -182,3 +170,6 @@ jobs:
           togglable-report: true
           diff-storage: _xml_coverage_reports
           coverage-summary-title: "Code Coverage Summary"
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3.1.0
