@@ -1,4 +1,5 @@
 # nestle-ml-starter
+
 MLOps blueprint template for ML at scale
 
 ## Requirements
@@ -7,11 +8,10 @@ MLOps blueprint template for ML at scale
 - [Poetry](https://python-poetry.org/docs/#installation)
 - [Docker](https://docs.docker.com/get-docker/)
 
-
 ## User Installation
 
 Install the following development dependencies:
 
-```bash	
+```bash
 pip install -r dev-requirements.txt
 ```
