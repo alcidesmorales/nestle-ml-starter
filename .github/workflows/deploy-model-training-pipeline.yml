@@ -25,13 +25,8 @@ jobs:
     uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
     with:
       file_name: ${{ needs.set-env-branch.outputs.config-file}}
-  login-azure:
-    needs: get-config
-    uses: azure/login@v1
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
   register-environment:
-    needs: login-azure
+    needs: get-config
     uses: Azure/mlops-templates/.github/workflows/register-environment.yml@main
     with:
       resource_group: ${{ needs.get-config.outputs.resource_group }}
@@ -40,7 +35,7 @@ jobs:
       conda_file: data-science/environment/train-conda.yml
       creds: ${{ secrets.AZURE_CREDENTIALS }}
   register-dataset:
-    needs: login-azure
+    needs: get-config
     uses: Azure/mlops-templates/.github/workflows/register-dataset.yml@main
     with:
       resource_group: ${{ needs.get-config.outputs.resource_group }}
@@ -49,7 +44,7 @@ jobs:
       data_file: mlops/azureml/train/data.yml
       creds: ${{ secrets.AZURE_CREDENTIALS }}
   create-compute:
-    needs: [login-azure]
+    needs: [get-config]
     uses: Azure/mlops-templates/.github/workflows/create-compute.yml@main
     with:
       cluster_name: cpu-cluster
