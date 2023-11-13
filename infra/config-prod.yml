@@ -1,0 +1,24 @@
+# Prod environment
+
+variables:
+  # Global
+  ap_vm_image: ubuntu-20.04
+
+  namespace: nestle-demo
+  postfix: 0001
+  location: eastus
+  environment: prod
+  enable_aml_computecluster: true
+  enable_monitoring: false
+
+  # Azure DevOps
+  ado_service_connection_rg: Nestle-ML-Prod
+  ado_service_connection_aml_ws: Nestle-ML-Prod
+
+  # For pipeline reference
+  resource_group: nestle-ml-starter
+  aml_workspace: nestle-ml-starter
+  application_insights: nestlemlstarte5773284298
+  key_vault: nestlemlstarte5108522071
+  container_registry: nestlemlstarter
+  storage_account: nestlemlstarte2806636313
