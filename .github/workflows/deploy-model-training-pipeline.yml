@@ -45,21 +45,21 @@ jobs:
       data_file: mlops/azureml/train/data.yml
     secrets:
       creds: ${{secrets.AZURE_CREDENTIALS}}
-  # create-compute:
-  #   needs: [get-config]
-  #   uses: Azure/mlops-templates/.github/workflows/create-compute.yml@main
-  #   with:
-  #     cluster_name: cpu-cluster
-  #     size: Standard_DS3_v2
-  #     min_instances: 0
-  #     max_instances: 1
-  #     cluster_tier: low_priority
-  #     resource_group: ${{ needs.get-config.outputs.resource_group }}
-  #     workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-  #   secrets:
-  #     creds: ${{secrets.AZURE_CREDENTIALS}}
+  create-compute:
+    needs: [get-config]
+    uses: Azure/mlops-templates/.github/workflows/create-compute.yml@main
+    with:
+      cluster_name: nestle-cluster
+      size: Standard_DS3_v2
+      min_instances: 0
+      max_instances: 1
+      cluster_tier: low_priority
+      resource_group: ${{ needs.get-config.outputs.resource_group }}
+      workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
+    secrets:
+      creds: ${{secrets.AZURE_CREDENTIALS}}
   run-model-training-pipeline:
-    needs: [get-config, register-environment, register-dataset]
+    needs: [get-config, register-environment, register-dataset, create-compute]
     uses: Azure/mlops-templates/.github/workflows/run-pipeline.yml@main
     with:
       resource_group: ${{ needs.get-config.outputs.resource_group }}
