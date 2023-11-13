@@ -1,4 +1,4 @@
-name: deploy-online-endpoint-pipeline
+name: Deploy Online Endpoint on Azure ML
 
 on:
   workflow_dispatch:
