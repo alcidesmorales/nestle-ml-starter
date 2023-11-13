@@ -4,6 +4,8 @@ from pathlib import Path
 import mlflow
 import numpy as np
 import pandas as pd
+from azureml.core import Workspace
+from obs.collector import Online_Collector
 
 TARGET_COL = "cost"
 
@@ -35,6 +37,8 @@ CAT_NOM_COLS = [
 
 CAT_ORD_COLS = []
 
+ws = Workspace.from_config()
+
 
 def parse_args():
     """Parse input arguments"""
@@ -59,9 +63,7 @@ def parse_args():
 
 
 def log_training_data(df, table_name):
-    from obs.collector import Online_Collector
-
-    collector = Online_Collector(table_name)
+    collector = Online_Collector(table_name, ws)
     collector.batch_collect(df)
 
 
