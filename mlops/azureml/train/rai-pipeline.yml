@@ -101,9 +101,9 @@ jobs:
 
   create_rai_job:
     type: command
-    component: azureml:rai_insights_constructor@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_insight_constructor/versions/0.9.0
     limits:
-      timeout: 120
+      timeout: 3600
     inputs:
       title: Responsible AI for Taxi Fare Prediction
       task_type: regression
@@ -115,28 +115,30 @@ jobs:
 
   explain_01:
     type: command
-    component: azureml:rai_insights_explanation@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_explanation/versions/0.9.0
     limits:
-      timeout: 120
+      timeout: 3600
     inputs:
       comment: Some random string
       rai_insights_dashboard: ${{parent.jobs.create_rai_job.outputs.rai_insights_dashboard}}
 
   causal_01:
     type: command
-    component: azureml:rai_insights_causal@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_causal/versions/0.9.0
     limits:
-      timeout: 120
+      timeout: 3600
     inputs:
       rai_insights_dashboard: ${{parent.jobs.create_rai_job.outputs.rai_insights_dashboard}}
       treatment_features: '["distance", "passengers"]'
       heterogeneity_features: '["store_forward", "vendor"]'
+      nuisance_model: linear
+      skip_cat_limit_checks: True
 
   counterfactual_01:
     type: command
-    component: azureml:rai_insights_counterfactual@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_counterfactual/versions/0.9.0
     limits:
-      timeout: 600
+      timeout: 3600
     inputs:
       rai_insights_dashboard: ${{parent.jobs.create_rai_job.outputs.rai_insights_dashboard}}
       total_CFs: 10
@@ -145,18 +147,18 @@ jobs:
 
   error_analysis_01:
     type: command
-    component: azureml:rai_insights_erroranalysis@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_erroranalysis/versions/0.9.0
     limits:
-      timeout: 120
+      timeout: 3600
     inputs:
       rai_insights_dashboard: ${{parent.jobs.create_rai_job.outputs.rai_insights_dashboard}}
       filter_features: '["distance", "passengers"]'
 
   gather_01:
     type: command
-    component: azureml:rai_insights_gather@latest
+    component: azureml://registries/azureml/components/microsoft_azureml_rai_tabular_insight_gather/versions/0.9.0
     limits:
-      timeout: 120
+      timeout: 3600
     inputs:
       constructor: ${{parent.jobs.create_rai_job.outputs.rai_insights_dashboard}}
       insight_1: ${{parent.jobs.causal_01.outputs.causal}}
