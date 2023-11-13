@@ -6,7 +6,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master, develoment]
+    branches: [main, master, development]
 
 jobs:
   lints:
