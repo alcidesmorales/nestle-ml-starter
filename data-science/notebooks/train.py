@@ -16,6 +16,7 @@
 # ---
 
 # %%
+import os
 import argparse
 
 from pathlib import Path
@@ -62,6 +63,10 @@ CAT_NOM_COLS = [
 CAT_ORD_COLS = []
 
 
+# %% tags=["parameters"]
+train_data = "/tmp/prep/train"
+model_output = "/tmp/train"
+
 # %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
 # Define Arguments for this step
 
@@ -72,12 +77,12 @@ class MyArgs:
 
 
 args = MyArgs(
-    train_data="/tmp/prep/train",
-    model_output="/tmp/train",
+    train_data=train_data,
+    model_output=model_output,
     regressor__n_estimators=500,
     regressor__bootstrap=1,
     regressor__max_depth=10,
-    regressor__max_features="auto",
+    regressor__max_features="sqrt",
     regressor__min_samples_leaf=4,
     regressor__min_samples_split=5,
 )

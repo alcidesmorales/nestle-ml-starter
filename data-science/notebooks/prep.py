@@ -57,6 +57,12 @@ CAT_NOM_COLS = [
 CAT_ORD_COLS = []
 
 
+# %% tags=["parameters"]
+raw_data = "../../data/"
+train_data = "/tmp/prep/train"
+val_data = "/tmp/prep/val"
+test_data = "/tmp/prep/test"
+
 # %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
 # Define Arguments for this step
 
@@ -67,10 +73,10 @@ class MyArgs:
 
 
 args = MyArgs(
-    raw_data="../../data/",
-    train_data="/tmp/prep/train",
-    val_data="/tmp/prep/val",
-    test_data="/tmp/prep/test",
+    raw_data=raw_data,
+    train_data=train_data,
+    val_data=val_data,
+    test_data=test_data,
 )
 
 os.makedirs(args.train_data, exist_ok=True)
@@ -88,10 +94,10 @@ def main(args):
     # -------------------------------------- #
 
     print("mounted_path files: ")
-    arr = os.listdir(args.raw_data)
+    arr = args.raw_data
     print(arr)
 
-    data = pd.read_csv((Path(args.raw_data) / "taxi-data.csv"))
+    data = pd.read_csv((Path(args.raw_data)))
     data = data[NUMERIC_COLS + CAT_NOM_COLS + CAT_ORD_COLS + [TARGET_COL]]
 
     # ------------- Split Data ------------- #

@@ -16,6 +16,7 @@
 # ---
 
 # %%
+import os
 import argparse
 from pathlib import Path
 
@@ -64,6 +65,13 @@ CAT_ORD_COLS = []
 SENSITIVE_COLS = ["vendor"]  # for fairlearn dashborad
 
 
+# %% tags=["parameters"]
+model_name = "taxi-model"
+model_input = "/tmp/train"
+test_data = "/tmp/prep/train"
+evaluation_output = "/tmp/evaluate"
+runner = "LocalRunner"
+
 # %% jupyter={"outputs_hidden": false, "source_hidden": false} nteract={"transient": {"deleting": false}}
 # Define Arguments for this step
 
@@ -74,11 +82,11 @@ class MyArgs:
 
 
 args = MyArgs(
-    model_name="taxi-model",
-    model_input="/tmp/train",
-    test_data="/tmp/prep/train",
-    evaluation_output="/tmp/evaluate",
-    runner="LocalRunner",
+    model_name=model_name,
+    model_input=model_input,
+    test_data=test_data,
+    evaluation_output=evaluation_output,
+    runner=runner,
 )
 
 os.makedirs(args.evaluation_output, exist_ok=True)

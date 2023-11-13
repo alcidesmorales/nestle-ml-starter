@@ -1,14 +1,18 @@
 import os
-import subprocess
 
 import pandas as pd
+import papermill as pm
 
 
 def test_prep_data():
-    raw_data = "/tmp/raw"
-    train_data = "/tmp/train"
-    val_data = "/tmp/val"
-    test_data = "/tmp/test"
+    """Test the prepare data notebook"""
+
+    notebook_dir = "data-science/notebooks"
+    tmp_dir = "/tmp/prep/"
+    raw_data = f"{tmp_dir}/raw"
+    train_data = f"{tmp_dir}/train"
+    val_data = f"{tmp_dir}/val"
+    test_data = f"{tmp_dir}/test"
 
     os.makedirs(raw_data, exist_ok=True)
     os.makedirs(train_data, exist_ok=True)
@@ -337,14 +341,18 @@ def test_prep_data():
     df.to_csv(os.path.join(raw_data, "taxi-data.csv"))
 
     raw_data = os.path.join(raw_data, "taxi-data.csv")
-    cmd = f"python src/nestle_ml_starter/prep/prep.py --raw_data={raw_data} --train_data={train_data} --val_data={val_data} --test_data={test_data}"
 
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    out, err = p.communicate()
-    result = str(out).split("\\n")
-    for lin in result:
-        if not lin.startswith("#"):
-            print(lin)
+    # Run the evaluate notebook
+    pm.execute_notebook(
+        f"{notebook_dir}/prep.ipynb",
+        f"{tmp_dir}/prep.ipynb",
+        parameters=dict(
+            raw_data=raw_data,
+            train_data=train_data,
+            val_data=val_data,
+            test_data=test_data,
+        ),
+    )
 
     assert os.path.exists(os.path.join(train_data, "train.parquet"))
     assert os.path.exists(os.path.join(val_data, "val.parquet"))

@@ -1,8 +1,8 @@
 import os
-import subprocess
 
 import mlflow
 import pandas as pd
+import papermill as pm
 from sklearn.ensemble import RandomForestRegressor
 
 TARGET_COL = "cost"
@@ -37,9 +37,13 @@ CAT_ORD_COLS = []
 
 
 def test_evaluate_model():
-    test_data = "/tmp/test"
-    model_input = "/tmp/model"
-    evaluation_output = "/tmp/evaluate"
+    """Test the evaluate model notebook"""
+
+    notebook_dir = "data-science/notebooks"
+    tmp_dir = "/tmp/eval/"
+    test_data = f"{tmp_dir}/test"
+    model_input = f"{tmp_dir}/model"
+    evaluation_output = f"{tmp_dir}/evaluate"
     model_name = "taxi-model"
     runner = "LocalRunner"
 
@@ -380,17 +384,32 @@ def test_evaluate_model():
     # Save the model
     mlflow.sklearn.save_model(sk_model=model, path=model_input)
 
-    cmd = f"python src/nestle_ml_starter/evaluate/evaluate.py --model_name={model_name} --model_input={model_input} --test_data={test_data} --evaluation_output={evaluation_output} --runner={runner}"
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    out, err = p.communicate()
-    result = str(out).split("\\n")
-    for lin in result:
-        if not lin.startswith("#"):
-            print(lin)
+    # Run the evaluate notebook
+    pm.execute_notebook(
+        f"{notebook_dir}/evaluate.ipynb",
+        f"{tmp_dir}/evaluate.ipynb",
+        parameters=dict(
+            model_name=model_name,
+            model_input=model_input,
+            test_data=test_data,
+            evaluation_output=evaluation_output,
+            runner=runner,
+        ),
+    )
 
+    # cmd = f"python src/nestle_ml_starter/evaluate/evaluate.py --model_name={model_name} --model_input={model_input} --test_data={test_data} --evaluation_output={evaluation_output} --runner={runner}"
+    # p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    # out, err = p.communicate()
+    # result = str(out).split("\\n")
+    # for lin in result:
+    #     if not lin.startswith("#"):
+    #         print(lin)
+
+    # Check the output
     assert os.path.exists(os.path.join(evaluation_output, "predictions.csv"))
     assert os.path.exists(os.path.join(evaluation_output, "score.txt"))
 
+    # Clean up
     print("Train Model Unit Test Completed")
 
 

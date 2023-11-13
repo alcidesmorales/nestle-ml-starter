@@ -1,12 +1,16 @@
 import os
-import subprocess
 
 import pandas as pd
+import papermill as pm
 
 
 def test_train_model():
-    train_data = "/tmp/train"
-    model_output = "/tmp/model"
+    """Test the train model notebook"""
+
+    notebook_dir = "data-science/notebooks"
+    tmp_dir = "/tmp/train/"
+    train_data = f"{tmp_dir}/train"
+    model_output = f"{tmp_dir}/model"
 
     os.makedirs(train_data, exist_ok=True)
     os.makedirs(model_output, exist_ok=True)
@@ -332,13 +336,15 @@ def test_train_model():
     df = pd.DataFrame(data)
     df.to_parquet(os.path.join(train_data, "train.parquet"))
 
-    cmd = f"python src/nestle_ml_starter/train/train.py --train_data={train_data} --model_output={model_output}"
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    out, err = p.communicate()
-    result = str(out).split("\\n")
-    for lin in result:
-        if not lin.startswith("#"):
-            print(lin)
+    # Run the train model notebook
+    pm.execute_notebook(
+        f"{notebook_dir}/train.ipynb",
+        f"{tmp_dir}/train.ipynb",
+        parameters=dict(
+            train_data=train_data,
+            model_output=model_output,
+        ),
+    )
 
     assert os.path.exists(os.path.join(model_output, "model.pkl"))
 
