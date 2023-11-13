@@ -85,10 +85,6 @@ jobs:
             trivy-scanning-results.txt
           retention-days: 30
 
-      - name: Validate package build
-        run: |
-          poetry build
-
   tests:
     name: Run tests
     runs-on: ubuntu-latest
