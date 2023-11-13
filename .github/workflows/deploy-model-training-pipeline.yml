@@ -33,7 +33,8 @@ jobs:
       workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
       environment_file: mlops/azureml/train/train-env.yml
       conda_file: data-science/environment/train-conda.yml
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    secrets:
+      token: ${{secrets.AZURE_CREDENTIALS}}
   register-dataset:
     needs: get-config
     uses: Azure/mlops-templates/.github/workflows/register-dataset.yml@main
@@ -42,7 +43,8 @@ jobs:
       workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
       name: taxi-data
       data_file: mlops/azureml/train/data.yml
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    secrets:
+      token: ${{secrets.AZURE_CREDENTIALS}}
   create-compute:
     needs: [get-config]
     uses: Azure/mlops-templates/.github/workflows/create-compute.yml@main
@@ -54,7 +56,8 @@ jobs:
       cluster_tier: low_priority
       resource_group: ${{ needs.get-config.outputs.resource_group }}
       workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    secrets:
+      token: ${{secrets.AZURE_CREDENTIALS}}
   run-model-training-pipeline:
     needs: [get-config, register-environment, register-dataset, create-compute]
     uses: Azure/mlops-templates/.github/workflows/run-pipeline.yml@main
@@ -63,4 +66,5 @@ jobs:
       workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
       parameters-file: mlops/azureml/train/pipeline.yml
       job-name: test
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    secrets:
+      token: ${{secrets.AZURE_CREDENTIALS}}
